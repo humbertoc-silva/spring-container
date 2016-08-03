@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+  <bean id="fonteDados" class="br.com.hcs.spring.container.FonteDadosArquivo"> 
+  	<property name="arquivo" value="/arquivos/pessoas.csv" />
+  </bean>
+
+  <bean id="impressor" class="br.com.hcs.spring.container.Impressor"></bean>
+  
+  <!-- Bean em que a injeção de dependências é feita via setter -->
+  <bean id="processadorSetterInjection" 
+  	    name="processador_setter_injection" 
+        class="br.com.hcs.spring.container.ProcessadorSetterInjection">
+  	<property name="impressor" ref="impressor"/>
+  	<property name="fonteDados" ref="fonteDados"/>
+  </bean>
+  
+  <!-- Bean em que a injeção de dependências é feita via contructor -->
+  <bean id="processadorConstructorInjection" 
+        name="processador_constructor_injection"
+  	    class="br.com.hcs.spring.container.ProcessadorConstructorInjection">
+  	<constructor-arg ref="fonteDados" index="0"/>
+  	<constructor-arg ref="impressor" index="1"/>
+  </bean>
+  
+  <!-- Bean em que a injeção de dependências é feita via setter e contructor -->
+  <bean id="processadorMixInjection" 
+        name="processador_mix_injection"
+  	    class="br.com.hcs.spring.container.ProcessadorMixInjection">
+  	<constructor-arg ref="fonteDados" index="0"/>
+  	<constructor-arg index="1">
+  	  <null/>
+  	</constructor-arg>
+  	<property name="impressor" ref="impressor"></property>
+  </bean>
+</beans>
