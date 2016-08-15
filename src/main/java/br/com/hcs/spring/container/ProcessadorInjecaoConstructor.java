@@ -1,10 +1,10 @@
 package br.com.hcs.spring.container;
 
-public class ProcessadorMixInjection {
+public class ProcessadorInjecaoConstructor {
     private IFonteDados fonteDados;
     private IImpressor impressor;
     
-    public ProcessadorMixInjection(IFonteDados fonteDados, IImpressor impressor) {
+    public ProcessadorInjecaoConstructor(IFonteDados fonteDados, IImpressor impressor) {
         this.fonteDados = fonteDados;
         this.impressor = impressor;
     }
@@ -23,5 +23,9 @@ public class ProcessadorMixInjection {
 
     public void setImpressor(IImpressor impressor) {
         this.impressor = impressor;
+    }
+    
+    public void processar() {
+        System.out.println("Processador com injeção de dependências por constructor.");
     }
 }

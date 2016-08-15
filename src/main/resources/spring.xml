@@ -1,38 +1,180 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd"
+	default-init-method="init" default-destroy-method="destroy">
 
-  <bean id="fonteDados" class="br.com.hcs.spring.container.FonteDadosArquivo"> 
-  	<property name="arquivo" value="/arquivos/pessoas.csv" />
-  </bean>
+	<!-- ********************************************************************************************** -->
+	<!-- Tipos de Injeção -->
+	<!-- ********************************************************************************************** -->
 
-  <bean id="impressor" class="br.com.hcs.spring.container.Impressor"></bean>
-  
-  <!-- Bean em que a injeção de dependências é feita via setter -->
-  <bean id="processadorSetterInjection" 
-  	    name="processador_setter_injection" 
-        class="br.com.hcs.spring.container.ProcessadorSetterInjection">
-  	<property name="impressor" ref="impressor"/>
-  	<property name="fonteDados" ref="fonteDados"/>
-  </bean>
-  
-  <!-- Bean em que a injeção de dependências é feita via contructor -->
-  <bean id="processadorConstructorInjection" 
-        name="processador_constructor_injection"
-  	    class="br.com.hcs.spring.container.ProcessadorConstructorInjection">
-  	<constructor-arg ref="fonteDados" index="0"/>
-  	<constructor-arg ref="impressor" index="1"/>
-  </bean>
-  
-  <!-- Bean em que a injeção de dependências é feita via setter e contructor -->
-  <bean id="processadorMixInjection" 
-        name="processador_mix_injection"
-  	    class="br.com.hcs.spring.container.ProcessadorMixInjection">
-  	<constructor-arg ref="fonteDados" index="0"/>
-  	<constructor-arg index="1">
-  	  <null/>
-  	</constructor-arg>
-  	<property name="impressor" ref="impressor"></property>
-  </bean>
+	<bean id="fonteDados" class="br.com.hcs.spring.container.FonteDadosArquivo">
+		<property name="arquivo" value="/arquivos/pessoas.csv" />
+	</bean>
+
+	<bean id="impressor" class="br.com.hcs.spring.container.Impressor" />
+
+	<!-- Bean em que a injeção de dependências é feita por setter -->
+	<bean id="processadorInjecaoSetter" name="processador_injecao_setter"
+		class="br.com.hcs.spring.container.ProcessadorInjecaoSetter">
+		<property name="impressor" ref="impressor" />
+		<property name="fonteDados" ref="fonteDados" />
+	</bean>
+
+	<!-- Bean em que a injeção de dependências é feita por constructor -->
+	<bean id="processadorInjecaoConstructor" name="processador_injecao_constructor"
+		class="br.com.hcs.spring.container.ProcessadorInjecaoConstructor">
+		<constructor-arg ref="fonteDados" index="0" />
+		<constructor-arg ref="impressor" index="1" />
+	</bean>
+
+	<!-- Bean em que a injeção de dependências é feita por setter e contructor -->
+	<bean id="processadorInjecaoMista" name="processador_injecao_mista"
+		class="br.com.hcs.spring.container.ProcessadorInjecaoMista">
+		<constructor-arg ref="fonteDados" index="0" />
+		<constructor-arg index="1">
+			<null />
+		</constructor-arg>
+		<property name="impressor" ref="impressor" />
+	</bean>
+
+	<!-- ********************************************************************************************** -->
+	<!-- Instanciação por Factory Method -->
+	<!-- ********************************************************************************************** -->
+
+	<!-- Bean em que a instanciação é feita por factory method (estático) -->
+	<bean id="fonteDadosFactoryMethodEstatico" class="br.com.hcs.spring.container.FactoryFonteDados"
+		factory-method="criarFonteDadosEstatico">
+		<constructor-arg index="0" value="arquivo" />
+	</bean>
+
+	<!-- Bean que contém o factory method -->
+	<bean id="factory" class="br.com.hcs.spring.container.FactoryFonteDados" />
+
+	<!-- Bean em que a instanciação é feita por factory method (instância) -->
+	<bean id="fonteDadosFactoryMethodInstancia" factory-bean="factory"
+		factory-method="criarFonteDadosInstancia">
+		<constructor-arg index="0" value="randomico" />
+	</bean>
+
+	<!-- Bean em que a instanciação é feita por factory method (instância) sem 
+		parâmetros. Em seguida, é realizada a injeção de valor no atributo arquivo -->
+	<bean id="fonteDadosArquivoFactoryMethod" factory-bean="factory"
+		factory-method="criarFonteDadosArquivo">
+		<property name="arquivo" value="/arquivos/pessoas.csv" />
+	</bean>
+
+	<!-- ********************************************************************************************** -->
+	<!-- Mapeando atributos complexos. -->
+	<!-- ********************************************************************************************** -->
+
+	<bean id="arquivo1" class="java.io.File">
+		<constructor-arg value="/caminho/para/arquivo1.csv" />
+	</bean>
+
+	<!-- Listas -->
+	<!-- Bean que possui um atributo do tipo List. -->
+	<bean id="fonteDadosArquivoStringList" class="br.com.hcs.spring.container.FonteDadosArquivoStringList">
+		<property name="arquivos">
+			<list>
+				<value>/caminho/para/arquivo1.csv</value>
+				<value>/caminho/para/arquivo1.csv</value>
+				<value>/caminho/para/arquivo1.csv</value>
+			</list>
+		</property>
+	</bean>
+
+	<!-- Bean que possui um atributo do tipo List, cada item da lista é representado 
+		por um bean anônimo. -->
+	<bean id="fonteDadosArquivoFileList" class="br.com.hcs.spring.container.FonteDadosArquivoFileList">
+		<property name="arquivos">
+			<list>
+				<ref bean="arquivo1" />
+				<bean class="java.io.File">
+					<constructor-arg value="/caminho/para/arquivo2.csv" />
+				</bean>
+				<bean class="java.io.File">
+					<constructor-arg value="/caminho/para/arquivo3.csv" />
+				</bean>
+			</list>
+		</property>
+	</bean>
+
+	<!-- Mapas -->
+	<!-- Bean que possui um atributo do tipo Map. -->
+	<bean id="fonteDadosArquivoMap" class="br.com.hcs.spring.container.FonteDadosArquivoMap">
+		<property name="arquivos">
+			<map>
+				<entry key="arquivo1">
+					<ref bean="arquivo1" />
+				</entry>
+				<entry key="arquivo2" value="/caminho/para/arquivo2.csv" />
+			</map>
+		</property>
+	</bean>
+
+	<!-- ********************************************************************************************** -->
+	<!-- Escopo -->
+	<!-- ********************************************************************************************** -->
+
+	<!-- Bean definido com o escopo singleton. -->
+	<bean id="fonteDadosEscopoSingleton" class="br.com.hcs.spring.container.FonteDadosArquivo"
+		scope="singleton">
+		<property name="arquivo" value="/arquivos/pessoas.csv" />
+	</bean>
+
+	<!-- Bean definido com o escopo singleton. -->
+	<bean id="fonteDadosEscopoPrototype" class="br.com.hcs.spring.container.FonteDadosArquivo"
+		scope="prototype">
+		<property name="arquivo" value="/arquivos/pessoas.csv" />
+	</bean>
+
+	<!-- ********************************************************************************************** -->
+	<!-- Instanciação Tardia -->
+	<!-- ********************************************************************************************** -->
+
+	<!-- Bean configurado para que sua instanciação seja tardia. -->
+	<bean id="fonteDadosInstanciacaoLazy" class="br.com.hcs.spring.container.FonteDadosArquivo"
+		lazy-init="true">
+		<property name="arquivo" value="/arquivos/pessoas.csv" />
+	</bean>
+
+	<!-- ********************************************************************************************** -->
+	<!-- Ciclo de vida dos beans -->
+	<!-- ********************************************************************************************** -->
+
+	<!-- Inicialização -->
+
+	<!-- Bean inicializado utilizando o método da interface InitializingBean -->
+	<bean id="fonteDadosInitializingBean"
+		class="br.com.hcs.spring.container.FonteDadosArquivoInitializingBean" />
+
+	<!-- Bean inicializado utilizando o método definido no atributo init-method -->
+	<bean id="fonteDadosInitMethod" 
+	    class="br.com.hcs.spring.container.FonteDadosArquivoInitMethod"
+		init-method="init" />
+
+	<!-- Destrução -->
+
+	<!-- Bean que utiliza o método definido na interface DisposableBean para 
+		liberar recursos e execultar operações de limpeza antes de ser destruído. -->
+	<bean id="fonteDadosDisposableBean"
+		class="br.com.hcs.spring.container.FonteDadosArquivoDisposableBean" />
+
+	<!-- Bean que utiliza o método definido no atributo destroy-method para 
+		liberar recursos e execultar operações de limpeza antes de ser destruído. -->
+	<bean id="fonteDadosDestroyMethod"
+		class="br.com.hcs.spring.container.FonteDadosArquivoDestroyMethod"
+		destroy-method="destroy" />
+
+	<!-- ********************************************************************************************** -->
+	<!-- Quando o bean conhece o seu container -->
+	<!-- ********************************************************************************************** -->
+
+	<bean id="impressorAware" class="br.com.hcs.spring.container.Impressor" scope="prototype" />
+
+	<!-- Bean que implementa a interface BeanFactoryAware para evitar que uma dependência com escopo prototype se torne
+		singleton acidentalmente. -->
+	<bean id="processadorAware" class="br.com.hcs.spring.container.ProcessadorAware" scope="singleton" />
 </beans>
+
