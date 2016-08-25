@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<!-- ********************************************************************************************** -->
+	<!-- Instanciação por Factory Method -->
+	<!-- ********************************************************************************************** -->
+
+	<!-- Bean em que a instanciação é feita por factory method (estático) -->
+	<bean id="fonteDadosFactoryMethodEstatico" class="br.com.hcs.spring.container.FactoryFonteDados"
+		factory-method="criarFonteDadosEstatico">
+		<constructor-arg index="0" value="arquivo" />
+	</bean>
+
+	<!-- Bean que contém o factory method -->
+	<bean id="factory" class="br.com.hcs.spring.container.FactoryFonteDados" />
+
+	<!-- Bean em que a instanciação é feita por factory method (instância) -->
+	<bean id="fonteDadosFactoryMethodInstancia" factory-bean="factory"
+		factory-method="criarFonteDadosInstancia">
+		<constructor-arg index="0" value="randomico" />
+	</bean>
+
+	<!-- Bean em que a instanciação é feita por factory method (instância) sem 
+		parâmetros. Em seguida, é realizada a injeção de valor no atributo arquivo -->
+	<bean id="fonteDadosArquivoFactoryMethod" factory-bean="factory"
+		factory-method="criarFonteDadosArquivo">
+		<property name="arquivo" value="/arquivos/pessoas.csv" />
+	</bean>
+</beans>

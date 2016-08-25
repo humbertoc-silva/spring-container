@@ -14,7 +14,8 @@ import br.com.hcs.spring.container.FonteDadosArquivoDisposableBean;
  */
 public class TesteDestruicao {
     public static void main(String[] args) {
-        ApplicationContext context = new ClassPathXmlApplicationContext("spring.xml");
+        String[] configLocations = {"spring.xml", "modularizando_configuracao.xml"};
+        ApplicationContext context = new ClassPathXmlApplicationContext(configLocations, true);
 
         FonteDadosArquivoDisposableBean fonteDadosArquivoDisposableBean = context
                 .getBean("fonteDadosDisposableBean", FonteDadosArquivoDisposableBean.class);

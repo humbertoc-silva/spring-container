@@ -4,6 +4,9 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd"
 	default-init-method="init" default-destroy-method="destroy">
 
+	<!-- Importando configuração -->
+	<import resource="spring-factory.xml" />
+
 	<!-- ********************************************************************************************** -->
 	<!-- Tipos de Injeção -->
 	<!-- ********************************************************************************************** -->
@@ -11,8 +14,6 @@
 	<bean id="fonteDados" class="br.com.hcs.spring.container.FonteDadosArquivo">
 		<property name="arquivo" value="/arquivos/pessoas.csv" />
 	</bean>
-
-	<bean id="impressor" class="br.com.hcs.spring.container.Impressor" />
 
 	<!-- Bean em que a injeção de dependências é feita por setter -->
 	<bean id="processadorInjecaoSetter" name="processador_injecao_setter"
@@ -36,32 +37,6 @@
 			<null />
 		</constructor-arg>
 		<property name="impressor" ref="impressor" />
-	</bean>
-
-	<!-- ********************************************************************************************** -->
-	<!-- Instanciação por Factory Method -->
-	<!-- ********************************************************************************************** -->
-
-	<!-- Bean em que a instanciação é feita por factory method (estático) -->
-	<bean id="fonteDadosFactoryMethodEstatico" class="br.com.hcs.spring.container.FactoryFonteDados"
-		factory-method="criarFonteDadosEstatico">
-		<constructor-arg index="0" value="arquivo" />
-	</bean>
-
-	<!-- Bean que contém o factory method -->
-	<bean id="factory" class="br.com.hcs.spring.container.FactoryFonteDados" />
-
-	<!-- Bean em que a instanciação é feita por factory method (instância) -->
-	<bean id="fonteDadosFactoryMethodInstancia" factory-bean="factory"
-		factory-method="criarFonteDadosInstancia">
-		<constructor-arg index="0" value="randomico" />
-	</bean>
-
-	<!-- Bean em que a instanciação é feita por factory method (instância) sem 
-		parâmetros. Em seguida, é realizada a injeção de valor no atributo arquivo -->
-	<bean id="fonteDadosArquivoFactoryMethod" factory-bean="factory"
-		factory-method="criarFonteDadosArquivo">
-		<property name="arquivo" value="/arquivos/pessoas.csv" />
 	</bean>
 
 	<!-- ********************************************************************************************** -->
@@ -176,5 +151,49 @@
 	<!-- Bean que implementa a interface BeanFactoryAware para evitar que uma dependência com escopo prototype se torne
 		singleton acidentalmente. -->
 	<bean id="processadorAware" class="br.com.hcs.spring.container.ProcessadorAware" scope="singleton" />
+	
+	<!-- ********************************************************************************************** -->
+	<!-- Aplicando herança na defifinição dos beans -->
+	<!-- ********************************************************************************************** -->
+	
+	<bean id="fonteDadosArquivo" class="br.com.hcs.spring.container.FonteDadosArquivo">
+		<property name="arquivo" value="/caminho/para/arquivo" />
+	</bean>
+	
+	<bean id="fonteDadosRandomico" class="br.com.hcs.spring.container.FonteDadosRandomico" />
+	
+	<!-- Bean pai. -->
+	<bean id="processadorPai" class="br.com.hcs.spring.container.ProcessadorInjecaoSetter">
+		<property name="fonteDados" ref="fonteDadosArquivo" />
+		<property name="impressor" ref="impressor" />
+	</bean>
+	
+	<!-- Bean filho. -->
+	<bean id="processadorFilho" parent="processadorPai">
+		<property name="fonteDados" ref="fonteDadosRandomico" />
+	</bean>
+	
+	<!-- ********************************************************************************************** -->
+	<!-- Spring Expression Language - SpEL -->
+	<!-- ********************************************************************************************** -->
+	
+	<!-- Expressões simples. -->
+	<bean id="fonteDadosSpel" class="br.com.hcs.spring.container.FonteDadosArquivo">
+		<property name="maxNumArquivos" value="#{5 > 4 ? 5 : 3}" />
+	</bean>
+	
+	<bean id="fonteDadosArquivoFileListCopia" class="br.com.hcs.spring.container.FonteDadosArquivoFileList">
+		<property name="arquivos" value="#{fonteDadosArquivoFileList.arquivos}" />
+		<property name="maxNumArquivos" value="#{fonteDadosArquivoFileList.arquivos?.size()}" />
+	</bean>
+	
+	<bean id="fonteDadosArquivoFileListArquivosGrandes"
+		class="br.com.hcs.spring.container.FonteDadosArquivoFileList">
+		<property name="arquivos" value="#{fonteDadosArquivoFileList.arquivos.?[exists() and size() ge 1024]}" />	
+	</bean>
+	
+	<bean id="fonteDadosArquivoUsuario" class="br.com.hcs.spring.container.FonteDadosArquivo">
+		<property name="arquivo" value="#{systemProperties['user.home']}/arquivo.csv" />
+	</bean>
 </beans>
 

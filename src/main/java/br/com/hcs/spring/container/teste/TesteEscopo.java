@@ -12,7 +12,8 @@ import br.com.hcs.spring.container.FonteDadosArquivo;
  */
 public class TesteEscopo {
     public static void main(String[] args) {
-        ApplicationContext context = new ClassPathXmlApplicationContext("spring.xml");
+        String[] configLocations = {"spring.xml", "modularizando_configuracao.xml"};
+        ApplicationContext context = new ClassPathXmlApplicationContext(configLocations, true);
         
         FonteDadosArquivo fonteDadosArquivoSingleton1 = context.getBean("fonteDadosEscopoSingleton",
                 FonteDadosArquivo.class);

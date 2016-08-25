@@ -14,7 +14,8 @@ import br.com.hcs.spring.container.FonteDadosArquivoInitializingBean;
  */
 public class TesteInicializacao {
     public static void main(String[] args) {
-        ApplicationContext context = new ClassPathXmlApplicationContext("spring.xml");
+        String[] configLocations = {"spring.xml", "modularizando_configuracao.xml"};
+        ApplicationContext context = new ClassPathXmlApplicationContext(configLocations, true);
 
         FonteDadosArquivoInitializingBean fonteDadosArquivoInitializingBean = context
                 .getBean("fonteDadosInitializingBean", FonteDadosArquivoInitializingBean.class);

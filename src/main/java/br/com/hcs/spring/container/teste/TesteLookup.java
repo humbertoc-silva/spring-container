@@ -15,8 +15,9 @@ import br.com.hcs.spring.container.ProcessadorInjecaoSetter;
  */
 public class TesteLookup {
     public static void main(String[] args) {
-        ApplicationContext context = new ClassPathXmlApplicationContext("spring.xml");
-
+        String[] configLocations = {"spring.xml", "modularizando_configuracao.xml"};
+        ApplicationContext context = new ClassPathXmlApplicationContext(configLocations, true);
+        
         // Obtendo beans através do id.
         ProcessadorInjecaoSetter processadorInjecaoSetter1 = (ProcessadorInjecaoSetter) context
                 .getBean("processadorInjecaoSetter");
